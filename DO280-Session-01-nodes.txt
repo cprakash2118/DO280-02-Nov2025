@@ -1,0 +1,98 @@
+
+Point-01-# Login to ROL - https://rol.redhat.com  [ Use RedHat Login ]
+Point-02-# Access LAB - UP and RUNNING.
+Point-03-# Access workstation [Click on "OPEN CONSOLE" for workstation]
+Point-04-# Let's start few basic [Check your cluster]
+
+Login to OCP cluster:-
+ - userName=admin 
+ - Password=redhatocp 
+ - API URL = https://api.ocp4.example.com:6443 
+ - clusterName=ocp4
+ - BaseDomain=example.com
+ - appName=console 
+ - namespaceName=openshift-console
+
+ 
+API URL = https://api.clusterName.BaseDomain:6443 
+Web Console = https://appName-namespaceName.apps.clusterName.BaseDomain
+
+As per DO280 lab environment:-
+ - clusterName=ocp4
+ - BaseDomain=example.com 
+https://api.ocp4.example.com:6443 
+https://console-openshift-console.apps.ocp4.example.com 
+
+
+
+$ oc login -u admin -p redhatocp https://api.ocp4.example.com:6443    [cluster-admin user]
+$ oc whoami 
+admin 
+$ oc whoami -t 
+$ oc whoami --show-console 
+https://console-openshift-console.apps.ocp4.example.com 
+
+$ oc get nodes 
+$ oc version 
+$ oc get clusterversion 
+
+Task-01:- (OCP authentication)
+user1-5 -> group=devops-apac-team ; secret=secret-devops-apac ; IdP=IdP-htpasswd-devops-apac
+user6-10 -> group=devops-na-team ; secret=secret-devops-na ; IdP=IdP-htpasswd-devops-na
+user11-20 -> group=myapp-team ; secret=secret-myapp ; IdP=IdP-htpasswd-myapp
+
+
+Task-02:- (RBAC)
+devops-apac-team=cluster-admin 
+devops-na-team=self-provisioner 
+
+NameSpace=myapp-project  
+user11-13 - admin w.r.t "myapp-project" 
+user13-18 - edit w.r.t "myapp-project"
+user19-20 - view w.r.t "myapp-project" 
+
+
+Task-03:- Deploy application w.r.t "myapp-project" only.
+- Via resource manifest 
+- Via kustomization and overlay 
+- Via template 
+- Via Helm 
+==========================
+Step-01:- Create user's data for authentication via htpasswd utility.
+
+
+htpasswd -c -b -B htpasswd-file-upload user1 redhat 
+htpasswd    -b -B htpasswd-file-upload user2 redhat 
+htpasswd    -b -B htpasswd-file-upload user3 redhat
+htpasswd    -b -B htpasswd-file-upload user4 redhat
+htpasswd    -b -B htpasswd-file-upload user5 redhat
+
+
+Step-02:- Open Web COnsole and update the oauth.
+https://console-openshift-console.apps.ocp4.example.com [admin/redhatocp]
+Administration -> "Cluster Setting" -> "Configuration" 
+Search for "Oauth" 
+Add IdP then proceed.
+
+Step-03:-
+ Verify the users's login to OCP cluster (Via CLI & Web Console).
+ oc login -u user1 -p redhat https://api.ocp4.example.com:6443 
+ DO the same for user2-5.
+ 
+====================
+Step-01:- Create user's data for authentication via htpasswd utility.
+
+htpasswd -c -b -B htpasswd-file-upload2 user6 redhat 
+htpasswd    -b -B htpasswd-file-upload2 user7 redhat 
+htpasswd    -b -B htpasswd-file-upload2 user8 redhat
+htpasswd    -b -B htpasswd-file-upload2 user9 redhat
+htpasswd    -b -B htpasswd-file-upload2 user10 redhat
+ 
+ 
+Step-02:- Create secret - To provide above information to OCP cluster via Secret (Generic - from-file).
+$ oc create secret generic secret-devops-na --from-file htpasswd=htpasswd-file-upload2 -n openshift-config 
+
+Step-03:- Update the Oauth file with IdP and secret infromation (as file).
+$ oc get oauth cluster -o yaml > oauth.yaml 
+$ 
+
