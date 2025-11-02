@@ -94,5 +94,12 @@ $ oc create secret generic secret-devops-na --from-file htpasswd=htpasswd-file-u
 
 Step-03:- Update the Oauth file with IdP and secret infromation (as file).
 $ oc get oauth cluster -o yaml > oauth.yaml 
-$ 
+$ vim ouath.yaml 
+(Search for "identityProvider")
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.14/pdf/authentication_and_authorization/OpenShift_Container_Platform-4.14-Authentication_and_authorization-en-US.pdf
+
+$ oc apply -f oauth.yaml 
+$ oc get pods -n openshift-authentication
+$ watch oc get pods -n openshift-authentication
+$ oc login -u user -p redhat https://api.ocp4.exmaple.com:6443 
 
